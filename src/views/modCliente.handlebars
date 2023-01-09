@@ -1,0 +1,139 @@
+<div class="container">
+    <div class="row justify-content-md-center">
+
+        <p class="h2">Modificar Cliente</p>
+
+<form id="formulario" class="needs-validation" novalidate>
+  <div class="form-row">
+    <div class="col-md-4 mb-3">
+      <label for="validationCustom01">First name</label>
+      <input type="text" class="form-control" id="inputName" placeholder="First name"  name="nombre" value="" required>
+      <div class="valid-feedback">
+        Looks good!
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <label for="validationCustom02">Last name</label>
+      <input type="text" class="form-control" id="inputLastName" placeholder="Last name" value="" name="apellido" required>
+      <div class="valid-feedback">
+        Looks good!
+      </div>
+    </div>
+    
+  </div>
+  <div class="form-row">
+    <div class="col-md-6 mb-3">
+      <label for="validationCustom03">Address</label>
+      <input type="text" class="form-control" id="inputAddress" placeholder="Address" name="domicilio" value=""  required>
+      <div class="invalid-feedback">
+        Please provide a valid Address.
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <label for="validationCustom04">Email</label>
+      <input type="text" class="form-control" id="inputEmail" placeholder="Email" name="email" value="" required>
+      <div class="invalid-feedback">
+        Please provide a valid Email.
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <label for="validationCustom05">Phone</label>
+      <input type="text" class="form-control" id="inputPhone" placeholder="Phone" name="telefono" value="" required>
+      <div class="invalid-feedback">
+        Please provide a valid Phone number.
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
+      <label class="form-check-label" for="invalidCheck">
+        Confirmar
+      </label>
+      <div class="invalid-feedback">
+        Confirmar
+      </div>
+    </div>
+  </div>
+  <button id="btnSubmit" class="btn btn-primary" type="submit">Actualizar registro</button>
+</form>
+
+    </div>
+</div>
+
+<script>
+
+  const name = document.getElementById('inputName'),
+  lastname=document.getElementById('inputLastName'),
+  email = document.getElementById('inputEmail'),
+  btnActualizar = document.getElementById('btnSubmit')
+  
+
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const idToUpdate = urlParams.get('id');
+  let array = [];
+
+
+ 
+async function getClientePorId() {
+
+  //params
+//obtener datos cliente
+      await fetch(`http://localhost:3000/clientes/api/id/${idToUpdate}`)
+        .then(response => response.json())
+        .then(data => {
+          console.log(data)
+          Object.entries(data).forEach((e)=>{
+             const [key, value] = e;
+              array.push(value)      
+          })
+        } )
+        .catch(function (error) {
+          console.log('Hubo unproblema con la peticion ' + error.message)
+        })
+ //Agrega informacion de ID seleccionado al formulario como valores
+ name.setAttribute("value", array[0]);
+ lastname.setAttribute("value", array[1]);
+ email.setAttribute("value", array[2]);
+    }
+
+    getClientePorId();
+
+const UpdateCliente = function(e){
+e.preventDefault()
+  console.log("actualizando cliente con id " + idToUpdate)
+
+  const formdata = new FormData(formulario);
+  const datosCompletos =  Object.fromEntries(formdata.entries());
+  console.log(datosCompletos) 
+  console.log(JSON.stringify(datosCompletos))
+
+
+ 
+//actualizar cliente
+async function patchData(url= `http://localhost:3000/clientes/api/${idToUpdate}`, data = datosCompletos){
+  const response = await fetch(url, {
+    method: 'PATCH',
+    mode: 'cors',
+    cache: 'default',
+    credentials: 'same-origin',
+    headers:{
+      'Content-type':'application/json'
+    } ,
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer', 
+     body: JSON.stringify(data)
+
+  });
+  console.log(`cliente con Id ${idToUpdate} actualizado correctamente...`)
+  return response.json();
+}
+ 
+patchData();
+
+}
+
+    btnActualizar.addEventListener("click", UpdateCliente)
+
+</script>

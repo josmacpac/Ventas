@@ -1,0 +1,44 @@
+<div class="container py-4">
+              
+          
+              <div class="p-5 mb-4 bg-light rounded-3">
+                <div class="container-fluid py-3">
+                  <h2 class="display-5 fw-bold">Sistema de ventas - Dunder Mufflin</h2>
+                  
+                  <button id="botonVentas" class="btn btn-primary btn-lg" type="button">Nueva Venta</button>
+                  <button id="botonAgregar" class="btn btn-primary btn-lg" type="button">Agregar Cliente</button>
+                  <button id="botonAgregarArticulo" class="btn btn-primary btn-lg" type="button">Agregar Articulo</button>
+                </div>
+              </div>
+
+              <script>
+                
+           const btnNuevoCliente = document.getElementById("botonAgregar")
+           const btnNuevoArticulo = document.getElementById("botonAgregarArticulo")
+           const btnNuevaVenta = document.getElementById("botonVentas");
+const agregarCliente = function(e){
+  e.preventDefault();
+  window.open("http://localhost:3000/clientes/nuevo", "Agregar_Cliente", "width=800,height=500,scrollbars=NO")
+
+}
+const agregarArticulo = function(e){
+  e.preventDefault();
+  window.open("http://localhost:3000/productos/nuevo", "Agregar_Cliente", "width=800,height=500,scrollbars=NO")
+
+}
+const nuevaVenta = function(e){
+  e.preventDefault();
+  window.open("http://localhost:3000/newSale", "Registro de ventas", "width=1000,height=700,scrollbars=NO")
+
+}
+
+
+           //Abrir ventana para agregar registro
+btnNuevoCliente.addEventListener("click", agregarCliente)
+btnNuevoArticulo.addEventListener("click", agregarArticulo)
+btnNuevaVenta.addEventListener("click", nuevaVenta)
+
+
+          
+              </script>
+          

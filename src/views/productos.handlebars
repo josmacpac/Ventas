@@ -1,0 +1,200 @@
+<div class="row align-items-md-stretch">
+  <div class="col-md-3">
+    <div class="h-100 p-5 text-white bg-dark rounded-3">
+      <h2>Busqueda</h2>
+
+
+
+
+      <div class="input-group mb-3">
+        <input id="inputBusqueda" type="text" class="form-control" placeholder="id, nombre"
+          aria-label="Recipient's username" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+          <button id="botonBusqueda" class="btn btn-outline-secondary" type="button">Buscar Articulo</button>
+        </div>
+      </div>
+
+      <div class="">
+        <form action="http://localhost:3000">
+          <button id="botonAgregar" class="btn btn-outline" type="submit">Agregar Articulo</button>
+        </form>
+        <form action="">
+          <button id="verTodos" class="btn btn-outline" type="submit">Ver todo el catalogo</button>
+        </form>
+      </div>
+    </div>
+
+
+  </div>
+  <div class="col-md-9">
+    <div class="h-100 p-5 bg-light border rounded-3">
+      <h2>Listado de Articulos</h2>
+
+      <div class="container-fluid">
+
+        <table class="table table-striped table-bordered" id="tablaClientes" style="width: 100%">
+          <thead>
+            <tr>
+             
+              <th scope="col">id</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Descripcion</th>
+              <th scope="col">Costo</th>
+              <th scope="col">Precio venta</th>
+              <th scope="col">Stock</th>
+            </tr>
+          </thead>
+          <tbody id="listadoProductos">
+
+          </tbody>
+        </table>
+
+      </div>
+
+      <button id="modRegistro" class="btn btn-outline-primary" type="button">Modificar registro</button>
+      <button id="btnDelete" class="btn btn-outline-secondary" type="button">Eliminar registro</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+
+ 
+  const botonVerTodos = document.getElementById("verTodos"),
+    tabla = document.getElementById("listadoProductos"),
+    botonBusqueda = document.getElementById("botonBusqueda"),
+    input = document.getElementById("inputBusqueda"),
+    btnNuevoCliente = document.getElementById("botonAgregar"),
+    btnModificar = document.getElementById('modRegistro'),
+    btnDelete = document.getElementById('btnDelete');
+  
+  let target;
+  let array = [];
+
+
+  function imprimirHTML(datos) {
+    console.log('obteniendo clientes...')
+    datos.forEach(dato => {
+      let id = dato.id_articulo,
+        name = dato.nombre,
+        descripcion = dato.descripcion,
+        costo = dato.costo,
+        venta = dato.venta,
+        stock = dato.stock;
+
+      tabla.innerHTML += `<tr>
+  
+  <th><input name="checkbox" value="" type= "checkbox">${id}</th>
+  <td>${name}</td>
+  <td>${descripcion}</td>
+  <td>${costo}</td>
+  <td>${venta}</td>
+  <td>${stock}</td>
+</tr>`
+    })
+    console.log("imprimiendo en pantalla...")
+  }
+
+  //Mostrar todos los registros
+  const verTodos = function (e) {
+    e.preventDefault();
+    tabla.innerHTML = "";
+    async function getAll() {
+      await fetch('http://localhost:3000/productos/api/all')
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+          imprimirHTML(data);
+        })
+        .catch(function (error) {
+          console.log('Hubo unproblema con la peticion ' + error.message)
+        })
+    }
+    getAll();
+  }
+
+  //Busqueda por nombre
+  const buscar = function (e) {
+    e.preventDefault();
+    tabla.innerHTML = "";
+    async function getClientePorNombre() {
+
+      await fetch(`http://localhost:3000/productos/api/name/${input.value}`)
+        .then(response => response.json())
+        .then(data => imprimirHTML(data))
+        .catch(function (error) {
+          console.log('Hubo unproblema con la peticion ' + error.message)
+        })
+    }
+    getProductoPorNombre();
+
+  }
+
+
+//Abrir ventana para agregar registro
+const agregarArticulo = function(e){
+  e.preventDefault();
+  window.open("http://localhost:3000/productos/nuevo", "Agregar_Articulo", "width=800,height=500,scrollbars=NO")
+
+}
+
+//seleccionar elemento de tabla
+const selectorId = function(e){
+  target = e.target.closest('th').innerText;
+  console.log(target)
+  array.push(target)
+  console.log(array)
+}
+
+//Abrir ventana para modificar Id seleccionado
+const updateProducto = function(){
+  //validar si hay un id seleccionado
+window.open(`http://localhost:3000/productos/update/?id=${target}`, "Modificar Articulo", "width=800,height=500,scrollbars=NO")
+}
+
+//Eliminar cliente
+
+const deleteProducto = function(e){
+  e.preventDefault();
+
+  //eliminar varios id de API
+
+
+  for(i=0; i<array.length; i++){
+
+console.log(array[i])
+async function deleteData(url= `http://localhost:3000/productos/api/${array[i]}`){
+  const response = await fetch(url, {
+    method: 'DELETE',
+      });
+  console.log(`articulo con Id= ${array[i]} eliminado correctamente...`)
+  
+  return response.json();
+}
+
+deleteData();
+
+  }
+
+  
+ 
+
+
+  console.log("eliminando Articulo...")
+}
+  
+
+
+
+  //Event listeners
+  botonVerTodos.addEventListener("click", verTodos)
+  botonBusqueda.addEventListener("click", buscar)
+  btnNuevoCliente.addEventListener("click", agregarArticulo)
+  tabla.addEventListener("click", selectorId);
+  btnModificar.addEventListener("click", updateProducto)
+  btnDelete.addEventListener("click", deleteProducto)
+
+
+</script>
